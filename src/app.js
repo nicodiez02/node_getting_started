@@ -10,16 +10,7 @@ import { router } from './routes/Router.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const app = express();
-const PORT = "3001";
-
-var options =
-{
-    host: '',
-    port: '',
-    user: '',
-    password: '',
-    database: ''
-}
+const PORT = "3000";
 
 app.listen(PORT, () => {
     console.log("Listening on port " + PORT);
@@ -33,7 +24,10 @@ app.use((req, res, next) =>
     res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
     next();
 });
+
 app.use(express.static(path.join(__dirname, '../public')));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(session(
     {
         key: 'session_info',
@@ -42,10 +36,14 @@ app.use(session(
         saveUninitialized: false
     }
 ));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
 app.use(router);
 
-app.engine('hbs', engine);
+
+
+app.engine('hbs', engine(
+    {
+        extname: ".hbs"
+    }
+));
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, '../views'));
